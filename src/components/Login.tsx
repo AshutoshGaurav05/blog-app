@@ -6,13 +6,18 @@ import { useDispatch } from "react-redux";
 import authService from "../appwrite/auth";
 import { useForm } from "react-hook-form";
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
-  const [error, setError] = useState("");
+  const { register, handleSubmit } = useForm<FormData>();
+  const [error, setError] = useState<string>("");
 
-  const login: any = async (data: { email: string; password: string }) => {
+  const login = async (data: FormData) => {
     setError("");
     try {
       const session = await authService.login(data);
@@ -57,10 +62,9 @@ function Login() {
               type="email"
               {...register("email", {
                 required: true,
-                validate: {
-                  matchPatern: (value: any) =>
-                    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                    "Email address must be a valid address",
+                pattern: {
+                  value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+                  message: "Email address must be a valid address",
                 },
               })}
             />
